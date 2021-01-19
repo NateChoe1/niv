@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fileread.h"
+#include "controls.h"
 
 int max(int a, int b);
 int min(int a, int b);
@@ -51,14 +52,14 @@ int main(int argc, char *argv[]) {
 			mvaddch(i, 0, '~');
 		else {
 			for (int j = 0; j < COLS; j++) {
-				mvaddch(i, j, chariter->value);
-				chariter = chariter->next;
 				if (chariter == NULL) {
 					lineiter = lineiter->next;
 					if (lineiter != NULL)
 						chariter = lineiter->beginning;
 					break;
 				}
+				mvaddch(i, j, chariter->value);
+				chariter = chariter->next;
 			}
 		}
 	}
@@ -70,21 +71,26 @@ int main(int argc, char *argv[]) {
 	int cursory = 0;
 	char lastpressed = getch();
 	int i = 0;
-	while (lastpressed != ' ') {
+	while (1) {
+		char shouldQuit = 0;
 		switch (lastpressed) {
-			case 'j':
+			case LEFT:
 				cursorx--;
 				break;
-			case 'k':
+			case DOWN:
 				cursory++;
 				break;
-			case 'l':
+			case UP:
 				cursory--;
 				break;
-			case ';':
+			case RIGHT:
 				cursorx++;
 				break;
+			case QUIT:
+				shouldQuit = 1;
+				break;
 		}
+		if (shouldQuit) break;
 		cursorx = max(cursorx, 0);
 		cursory = max(cursory, 0);
 		cursorx = min(cursorx, COLS);

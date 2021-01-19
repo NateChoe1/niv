@@ -16,10 +16,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *
  * Email me: natechoe9@gmail.com
- *
- * NIV
- * Isn't
- * Vim
  * */
 
 #include "os.h"
@@ -50,6 +46,14 @@ struct line getHead(char path[]) {
 	int c = fgetc(file);
 	while (c != EOF) {
 		if (c == '\n') {
+			if (chariter->prev != NULL) {
+				chariter->prev->next = NULL;
+				free(chariter);
+			}
+			else {
+				lineiter->beginning=NULL;
+			}
+			// There is a null char at the end of every line, so I have to remove that.
 			lineiter->next = malloc(sizeof(struct line));
 			lineiter->next->prev = lineiter;
 			lineiter = lineiter->next;
