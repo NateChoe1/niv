@@ -1,19 +1,8 @@
 #include <curses.h>
 #include <stdlib.h>
 #include <string.h>
-#include "os.h"
+#include "fileread.h"
 
-struct linechar {
-	char value;
-	struct linechar *prev;
-	struct linechar *next;
-};
-
-struct line {
-	struct linechar *beginning;
-	struct line *prev;
-	struct line *next;
-};
 
 int main(int argc, char *argv[]) {
 	int filesize;
@@ -28,53 +17,27 @@ int main(int argc, char *argv[]) {
 
 	char path[sizeof(argv[1]) / sizeof(char)];
 	strcpy(path, argv[1]);
-	FILE *file;
-	file = fopen(path, "r");
-
-	struct line first;
-	struct line *iterator = &first;
-	iterator->beginning = malloc(sizeof(struct linechar));
-	struct linechar *chariterator = iterator->beginning;
-
-	int c = fgetc(file);
-	while (c != EOF) {
-		if (c == '\n') {
-			iterator->next = malloc(sizeof(struct line));
-			iterator->next->prev = iterator;
-			iterator = iterator->next;
-			iterator->beginning = malloc(sizeof(struct linechar));
-			chariterator = iterator->beginning;
-		}
-		else {
-			chariterator->value = c;
-			chariterator->next = malloc(sizeof(struct linechar));
-			chariterator->next->prev = chariterator;
-			chariterator = chariterator->next;
-		}
-		
-		c = fgetc(file);
-	}
-
-	iterator = iterator->prev;
-	free(iterator->next);//I don't know why, but there's always a newline at the end of every file.
-	iterator->next = NULL;
+	struct line head = getHead(path);
 
 	//At this point, first will have every line which contains every char.
 	
-	//Everything beyond this point is just me messing around with curses.
-
-	/*for (int i = 0; i < LINES; i++) {       //y values
-		int failed = 0;
-		for (int j = 0; j < COLS; j++) {//x values
-			int intchar = fgetc(file);
-			if (intchar == EOF) {
-				failed = 1;
-				break;
+	struct line *lineiter = &head;
+	struct linechar *chariter = lineiter->beginning;
+	for (int i = 0; i < LINES; i++) {       //y values
+		if (lineiter == NULL)
+			mvaddch(i, 0, '~');
+		else {
+			for (int j = 0; j < COLS; j++) {//x values
+				mvaddch(i, j, chariter->value);
+				chariter = chariter->next;
+				if (chariter == NULL) {
+					lineiter = lineiter->next;
+					if (lineiter != NULL)
+						chariter = lineiter->beginning;
+					break;
+				}
 			}
-			char c = (char) intchar;
-			mvaddch(i, j, c);
 		}
-		if (failed) break;
 	}
 	
 	int cursorx = 0;
@@ -99,7 +62,7 @@ int main(int argc, char *argv[]) {
 		move(cursory, cursorx);
 		refresh();
 		lastpressed = getch();
-	}*/
+	}
 
 	endwin();
 	exit(0);
