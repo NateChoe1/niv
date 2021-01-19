@@ -21,6 +21,7 @@
 #include "os.h"
 #include <stdlib.h>
 
+
 struct linechar {
 	char value;
 	struct linechar *prev;
@@ -31,8 +32,18 @@ struct line {
 	struct linechar *beginning;
 	struct line *prev;
 	struct line *next;
-	int length;
 };
+
+int getLineLength(struct line *l) {
+	if (l == NULL) return 0;
+	struct linechar *i = l->beginning;
+	int count = 0;
+	while (i != NULL) {
+		count++;
+		i = i->next;
+	}
+	return count;
+}
 
 struct line getHead(char path[]) {
 	FILE *file;
@@ -65,7 +76,6 @@ struct line getHead(char path[]) {
 			chariter->next = malloc(sizeof(struct linechar));
 			chariter->next->prev = chariter;
 			chariter = chariter->next;
-			lineiter->length++;
 		}
 		
 		c = fgetc(file);

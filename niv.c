@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 	strcpy(path, argv[1]);
 	struct line head = getHead(path);
 
-	//At this point, first will have every line which contains every char.
+	//At this point, first will have every line which contains every char. If you can't fit your entire text file into memory, you either need more memory or you need to write better code, there is no reason that you should have a text file exceeding a few megabytes.
 	
 	struct line *lineiter = &head;
 	struct linechar *chariter = lineiter->beginning;
@@ -70,32 +70,43 @@ int main(int argc, char *argv[]) {
 	int cursorx = 0;
 	int cursory = 0;
 	char lastpressed = getch();
-	int i = 0;
+	struct line *currentLine = &head;
+	int currentLength = -1;
 	while (1) {
 		char shouldQuit = 0;
+		if (currentLength == -1)
+			currentLength = getLineLength(currentLine);
 		switch (lastpressed) {
 			case LEFT:
-				cursorx--;
+				if (cursorx > 0)
+					cursorx--;
 				break;
 			case DOWN:
+				if (currentLine->next == NULL)
+					break;
+				currentLine = currentLine->next;
 				cursory++;
+				currentLength = -1;
 				break;
 			case UP:
+				if (currentLine->prev == NULL)
+					break;
+				currentLine = currentLine->prev;
 				cursory--;
+				currentLength = -1;
 				break;
 			case RIGHT:
-				cursorx++;
+				if (cursorx < currentLength)
+					cursorx++;
 				break;
 			case QUIT:
 				shouldQuit = 1;
 				break;
 		}
+		if (currentLength == -1)
+			currentLength = getLineLength(currentLine);
 		if (shouldQuit) break;
-		cursorx = max(cursorx, 0);
-		cursory = max(cursory, 0);
-		cursorx = min(cursorx, COLS);
-		cursory = min(cursory, LINES);
-		move(cursory, cursorx);
+		move(cursory, min(cursorx, currentLength));
 		refresh();
 		lastpressed = getch();
 	}
