@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
 					cursorY++;
 				}
 				lineLength = getLineLength(currentLine);
+				cursorX = lineLength-1;
 				break;
 			case QUIT:
 				quit = 1;
