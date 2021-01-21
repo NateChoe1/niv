@@ -20,7 +20,7 @@
 
 #include "os.h"
 #include <stdlib.h>
-
+#include <stdio.h>
 
 struct linechar {
 	char value;

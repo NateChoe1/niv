@@ -19,14 +19,15 @@
  * */
 
 
-#include <curses.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include "fileread.h"
+#include "draw.h"
 #include "controls.h"
 
-int max(int a, int b);
 int min(int a, int b);
+int max(int a, int b);
 
 int main(int argc, char *argv[]) {
 	int filesize;
@@ -44,83 +45,85 @@ int main(int argc, char *argv[]) {
 	struct line head = getHead(path);
 
 	//At this point, first will have every line which contains every char. If you can't fit your entire text file into memory, you either need more memory or you need to write better code, there is no reason that you should have a text file exceeding a few megabytes.
-	
-	struct line *lineiter = &head;
-	struct linechar *chariter = lineiter->beginning;
-	for (int i = 0; i < LINES - 1; i++) {
-		if (lineiter == NULL)
-			mvaddch(i, 0, '~');
-		else {
-			for (int j = 0; j < COLS; j++) {
-				if (chariter == NULL) {
-					lineiter = lineiter->next;
-					if (lineiter != NULL)
-						chariter = lineiter->beginning;
-					break;
-				}
-				mvaddch(i, j, chariter->value);
-				chariter = chariter->next;
-			}
-		}
-	}
 
-	move(0, 0);
-	refresh();
-	
-	int cursorx = 0;
-	int cursory = 0;
-	char lastpressed = getch();
+	int cursorX = 0;
+	int cursorY = 0;
+	char quit = 0;
+	char *bottomMessage;
+	bottomMessage = "\0";
 	struct line *currentLine = &head;
-	int currentLength = -1;
-	while (1) {
-		char shouldQuit = 0;
-		if (currentLength == -1)
-			currentLength = getLineLength(currentLine);
-		switch (lastpressed) {
+	while (!quit) {
+		int lineLength = getLineLength(currentLine);
+		drawText(head, min(cursorX, max(lineLength-1, 0)), cursorY, 0, bottomMessage);
+		switch (getch()) {
 			case LEFT:
-				if (cursorx > 0)
-					cursorx--;
+				cursorX = min(cursorX, lineLength - 1);
+				if (cursorX > 0)
+					cursorX--;
 				break;
-			case DOWN:
-				if (currentLine->next == NULL)
-					break;
-				currentLine = currentLine->next;
-				cursory++;
-				currentLength = -1;
-				break;
-			case UP:
-				if (currentLine->prev == NULL)
-					break;
-				currentLine = currentLine->prev;
-				cursory--;
-				currentLength = -1;
+			case LINE_BEGIN:
+				cursorX = 0;
 				break;
 			case RIGHT:
-				if (cursorx < currentLength)
-					cursorx++;
+				if (cursorX < lineLength - 1)
+				cursorX++;
+				break;
+			case LINE_END:
+				cursorX = lineLength - 1;
+				break;
+			case UP:
+				if (currentLine->prev != NULL) {
+					cursorY--;
+					currentLine = currentLine->prev;
+				}
+				break;
+			case BEGIN:
+				cursorX = 0;
+				cursorY = 0;
+				break;
+			case DOWN:
+				if (currentLine->next != NULL) {
+					cursorY++;
+					currentLine = currentLine->next;
+				}
+				break;
+			case END:
+				while (currentLine->next != NULL) {
+					currentLine = currentLine->next;
+					cursorY++;
+				}
+				lineLength = getLineLength(currentLine);
 				break;
 			case QUIT:
-				shouldQuit = 1;
+				quit = 1;
 				break;
+			case SAVE:
+				break;
+			case FORWARD_BEGIN:
+				break;
+			case FORWARD_END:
+				break;
+			case BACKWARD_BEGIN:
+				break;
+			case BACKWARD_END:
+				break;
+			//TODO: Implement these
+			default:
+				bottomMessage = malloc(16);
+				bottomMessage = "Invalid command.";
 		}
-		if (currentLength == -1)
-			currentLength = getLineLength(currentLine);
-		if (shouldQuit) break;
-		move(cursory, min(cursorx, currentLength));
-		refresh();
-		lastpressed = getch();
+		//These are defined in controls.h
 	}
-
 	endwin();
 	exit(0);
-}
-
-int max(int a, int b) {
-	if (a > b) return a;
-	return b;
 }
 
 int min(int a, int b) {
 	if (a > b) return b;
 	return a;
+}
+
+int max(int a, int b) {
+	if (a > b) return a;
+	return b;
 }

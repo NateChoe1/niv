@@ -19,9 +19,13 @@
  * */
 
 #define LEFT 'j'
+#define LINE_BEGIN 'J'
 #define RIGHT ';'
+#define LINE_END ':'
 #define UP 'l'
+#define BEGIN 'L'
 #define DOWN 'k'
+#define END 'K'
 #define QUIT 'N'
 #define SAVE 'B'
 #define FORWARD_BEGIN 'f'
