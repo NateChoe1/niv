@@ -82,3 +82,14 @@ struct line *getHead(char path[]) {
 
 	return lineiter;
 }
+
+void writeFile(char path[], struct line *fileContent) {
+	FILE *file = fopen(path, "w");
+	while (fileContent->next != NULL) {
+		for (int i = 0; i < fileContent->lineLength; i++)
+			fputc(fileContent->lineContent[i], file);
+		if (fileContent->next != NULL)
+			fputc('\n', file);
+		fileContent = fileContent->next;
+	}
+}

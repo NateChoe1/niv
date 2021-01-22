@@ -43,14 +43,6 @@ int main(int argc, char *argv[]) {
 	struct line *head = getHead(path);
 	struct line *currentLine = head;
 
-	/*while (iterator->next != NULL) {
-		for (int i = 0; i < iterator->lineLength; i++)
-			printf("%c", iterator->lineContent[i]);
-
-		iterator = iterator->next;
-		printf("\n");
-	}*/
-
 	//At this point the file should be loaded into head.
 
 	int cursorX = 0;
@@ -106,6 +98,7 @@ int main(int argc, char *argv[]) {
 				quit = 1;
 				break;
 			case SAVE:
+				writeFile(path, head);
 				break;
 			case FORWARD_BEGIN:
 				break;
