@@ -83,6 +83,19 @@ int main(int argc, char *argv[]) {
 						cursorX--;
 						currentLine->lineLength--;
 						break;
+					case '\n':;
+						struct line *newLine = initializeLine();
+						newLine->next = currentLine->next;
+						newLine->prev = currentLine;
+						currentLine->next->prev = newLine;
+						currentLine->next = newLine;
+						for (int i = cursorX; i < currentLine->lineLength; i++)
+							newLine = addToLine(newLine, currentLine->lineContent[i - cursorX]);
+						newLine->lineLength = currentLine->lineLength - cursorX;
+						currentLine->lineLength = cursorX + 1;
+						currentLine = newLine;
+						cursorX = 0;
+						cursorY++;
 					default:
 						mvaddch(20, 20, 'a');
 						currentLine = addToLine(currentLine, '\0');
