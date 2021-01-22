@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 	int cursorX = 0;
 	int cursorY = 0;
 	char quit = 0;
-	char *bottomMessage;
+	char *bottomMessage = malloc(1);
 	bottomMessage = "\0";
 
 	while (!quit) {
@@ -77,6 +77,8 @@ int main(int argc, char *argv[]) {
 				}
 				break;
 			case BEGIN:
+				while (currentLine->prev != NULL)
+					currentLine = currentLine->prev;
 				cursorX = 0;
 				cursorY = 0;
 				break;
