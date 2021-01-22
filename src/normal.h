@@ -45,7 +45,6 @@ struct editorState handleKeypress(int keyPressed, int cursorX, int cursorY, stru
 				newState.cursorY = cursorY + 1;
 				newState.currentLine = newState.currentLine->next;
 			}
-			printf("No segfault yet\n");
 			break;
 		case END:
 			while (newState.currentLine->next != NULL) {

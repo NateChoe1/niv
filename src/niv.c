@@ -77,7 +77,14 @@ int main(int argc, char *argv[]) {
 					case ENTER_NORMAL:
 						mode = NORMAL_MODE;
 						break;
+					case BACKSPACE:
+						for (int i = cursorX - 1; i < currentLine->lineLength - 1; i++)
+							currentLine->lineContent[i] = currentLine->lineContent[i+1];
+						cursorX--;
+						currentLine->lineLength--;
+						break;
 					default:
+						mvaddch(20, 20, 'a');
 						currentLine = addToLine(currentLine, '\0');
 						for (int i = currentLine->lineLength - 1; i > cursorX; i--)
 							currentLine->lineContent[i] = currentLine->lineContent[i-1];

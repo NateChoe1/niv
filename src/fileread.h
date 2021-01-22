@@ -52,31 +52,32 @@ struct line *addToLine(struct line *addLine, char addChar) {
 }
 
 struct line *getHead(char path[]) {
-	FILE *file;
-	file = fopen(path, "r");
-
 	struct line *lineiter = initializeLine();
 
-	int c = fgetc(file);
-	while (c != EOF) {
-		if (c == '\n') {
-			lineiter->next = initializeLine();
-			lineiter->next->prev = lineiter;
-			lineiter = lineiter->next;
+	FILE *file;
+	file = fopen(path, "r");
+	if (file) {
+		int c = fgetc(file);
+		while (c != EOF) {
+			if (c == '\n') {
+				lineiter->next = initializeLine();
+				lineiter->next->prev = lineiter;
+				lineiter = lineiter->next;
+			}
+			else {
+				lineiter = addToLine(lineiter, c);
+			}
+			
+			c = fgetc(file);
 		}
-		else {
-			lineiter = addToLine(lineiter, c);
-		}
-		
-		c = fgetc(file);
-	}
 
-	lineiter = lineiter->prev;
-	free(lineiter->next);
-	lineiter->next = NULL;
-
-	while (lineiter->prev != NULL)
 		lineiter = lineiter->prev;
+		free(lineiter->next);
+		lineiter->next = NULL;
+
+		while (lineiter->prev != NULL)
+			lineiter = lineiter->prev;
+	}
 
 	return lineiter;
 }
