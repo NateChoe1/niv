@@ -77,6 +77,10 @@ struct line *getHead(char path[]) {
 		c = fgetc(file);
 	}
 
+	lineiter = lineiter->prev;
+	free(lineiter->next);
+	lineiter->next = NULL;
+
 	while (lineiter->prev != NULL)
 		lineiter = lineiter->prev;
 
@@ -86,7 +90,7 @@ struct line *getHead(char path[]) {
 void writeFile(char path[], struct line *fileContent) {
 	FILE *file = fopen(path, "w");
 	while (fileContent->next != NULL) {
-		for (int i = 0; i < fileContent->lineLength; i++)
+		for (int i = 0; i < fileContent->lineLength - 1; i++)
 			fputc(fileContent->lineContent[i], file);
 		if (fileContent->next != NULL)
 			fputc('\n', file);
