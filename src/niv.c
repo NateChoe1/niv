@@ -23,9 +23,8 @@
 #include "fileread.h"
 #include "draw.h"
 #include "controls.h"
-
-int min(int a, int b);
-int max(int a, int b);
+#include "modes.h"
+#include "normal.h"
 
 int main(int argc, char *argv[]) {
 	int filesize;
@@ -51,82 +50,31 @@ int main(int argc, char *argv[]) {
 	char *bottomMessage = malloc(1);
 	bottomMessage = "\0";
 
+	int mode = NORMAL_MODE;
 	while (!quit) {
 		int lineLength = currentLine->lineLength;
 		drawText(head, min(cursorX, lineLength - 1), cursorY, 0, bottomMessage);
-		switch (getch()) {
-			case LEFT:
-				cursorX = min(cursorX, lineLength - 1);
-				if (cursorX > 0)
-					cursorX--;
-				break;
-			case LINE_BEGIN:
-				cursorX = 0;
-				break;
-			case RIGHT:
-				if (cursorX < lineLength - 1)
-				cursorX++;
-				break;
-			case LINE_END:
-				cursorX = lineLength - 1;
-				break;
-			case UP:
-				if (currentLine->prev != NULL) {
-					cursorY--;
-					currentLine = currentLine->prev;
+		int keyPressed = getch();
+		switch (mode) {
+			case NORMAL_MODE:;
+				struct editorState newState;
+				newState = handleKeypress(keyPressed, cursorX, cursorY, currentLine, lineLength, path, head);
+				cursorX = newState.cursorX;
+				cursorY = newState.cursorY;
+				mode = newState.mode;
+				switch (newState.condition) {
+					case EXIT:
+						quit = 1;
+						break;
+					case INVALID_COMMAND_INPUTTED:
+						bottomMessage = malloc(16);
+						bottomMessage = "Invalid command inputted.";
+						break;
 				}
+				currentLine = newState.currentLine;
 				break;
-			case BEGIN:
-				while (currentLine->prev != NULL)
-					currentLine = currentLine->prev;
-				cursorX = 0;
-				cursorY = 0;
-				break;
-			case DOWN:
-				if (currentLine->next != NULL) {
-					cursorY++;
-					currentLine = currentLine->next;
-				}
-				break;
-			case END:
-				while (currentLine->next != NULL) {
-					currentLine = currentLine->next;
-					cursorY++;
-				}
-				lineLength = currentLine->lineLength;
-				cursorX = lineLength-1;
-				break;
-			case QUIT:
-				quit = 1;
-				break;
-			case SAVE:
-				writeFile(path, head);
-				break;
-			case FORWARD_BEGIN:
-				break;
-			case FORWARD_END:
-				break;
-			case BACKWARD_BEGIN:
-				break;
-			case BACKWARD_END:
-				break;
-			//TODO: Implement these
-			default:
-				bottomMessage = malloc(16);
-				bottomMessage = "Invalid command.";
 		}
-		//These are defined in controls.h
 	}
 	endwin();
 	exit(0);
-}
-
-int min(int a, int b) {
-	if (a > b) return b;
-	return a;
-}
-
-int max(int a, int b) {
-	if (a > b) return a;
-	return b;
 }

@@ -21,16 +21,9 @@
 #define INITIAL_LINE_LENGTH 5
 
 #include "os.h"
+#include "structs.h"
 #include <stdlib.h>
 #include <stdio.h>
-
-struct line {
-	struct line *prev;
-	struct line *next;
-	int lineLength;
-	int allocatedLength;
-	char lineContent[];
-};
 
 struct line *initializeLine() {
 	struct line *returnValue = malloc(sizeof(struct line) + (sizeof(char) * INITIAL_LINE_LENGTH));

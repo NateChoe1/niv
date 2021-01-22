@@ -18,20 +18,5 @@
  * Email me: natechoe9@gmail.com
  * */
 
-#define LEFT 'j'
-#define LINE_BEGIN 'J'
-#define RIGHT ';'
-#define LINE_END ':'
-#define UP 'l'
-#define BEGIN 'L'
-#define DOWN 'k'
-#define END 'K'
-#define QUIT 'N'
-#define SAVE 'B'
-#define FORWARD_BEGIN 'f'
-#define FORWARD_END 'F'
-#define BACKWARD_BEGIN 'g'
-#define BACKWARD_END 'G'
-
-#define ENTER_INSERT 'a'
-#define ENTER_NORMAL '~'
+#define NORMAL_MODE 0
+#define INSERT_MODE 0
