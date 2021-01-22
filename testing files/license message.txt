@@ -1,4 +1,4 @@
-	NIV, a text editor.
+NIV, a text editor.
 Copyright (C) 2021  Nathaniel Choe
 
 This program is free software: you can redistribute it and/or modify

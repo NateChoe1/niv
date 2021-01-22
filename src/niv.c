@@ -18,10 +18,8 @@
  * Email me: natechoe9@gmail.com
  * */
 
-
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 #include "fileread.h"
 #include "draw.h"
 #include "controls.h"
@@ -44,7 +42,15 @@ int main(int argc, char *argv[]) {
 	strcpy(path, argv[1]);
 	struct line head = getHead(path);
 
-	//At this point, first will have every line which contains every char. If you can't fit your entire text file into memory, you either need more memory or you need to write better code, there is no reason that you should have a text file exceeding a few megabytes.
+	/*while (iterator->next != NULL) {
+		for (int i = 0; i < iterator->lineLength; i++)
+			printf("%c", iterator->lineContent[i]);
+
+		iterator = iterator->next;
+		printf("\n");
+	}*/
+
+	//At this point the file should be loaded into head.
 
 	int cursorX = 0;
 	int cursorY = 0;
@@ -52,8 +58,9 @@ int main(int argc, char *argv[]) {
 	char *bottomMessage;
 	bottomMessage = "\0";
 	struct line *currentLine = &head;
+
 	while (!quit) {
-		int lineLength = getLineLength(currentLine);
+		int lineLength = currentLine->lineLength;
 		drawText(head, min(cursorX, max(lineLength-1, 0)), cursorY, 0, bottomMessage);
 		switch (getch()) {
 			case LEFT:
@@ -92,7 +99,7 @@ int main(int argc, char *argv[]) {
 					currentLine = currentLine->next;
 					cursorY++;
 				}
-				lineLength = getLineLength(currentLine);
+				lineLength = currentLine->lineLength;
 				cursorX = lineLength-1;
 				break;
 			case QUIT:

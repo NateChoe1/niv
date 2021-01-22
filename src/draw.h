@@ -3,10 +3,10 @@
 void drawText(struct line head, int cursorX, int cursorY, int drawStart, char bottomText[]) {
 	clear();
 	struct line *lineIter = &head;
-	struct linechar *charIter = lineIter->beginning;
 	for (int i = 0; i < drawStart; i++)
 		lineIter = lineIter->next;
 	int lineDrawn = drawStart;
+	int charsDrawn = 0;
 	int displayX;
 	int displayY;
 	char cursorSet = 0;
@@ -17,20 +17,19 @@ void drawText(struct line head, int cursorX, int cursorY, int drawStart, char bo
 		}
 		else {
 			for (int j = 0; j < COLS; j++) {
-				if (j == cursorX && lineDrawn == cursorY && !cursorSet) {
+				if (charsDrawn == cursorX && lineDrawn == cursorY && !cursorSet) {
 					cursorSet = 1;
 					displayX = j;
 					displayY = i;
 				}
-				if (charIter == NULL) {
+				if (charsDrawn >= lineIter->lineLength) {
 					lineIter = lineIter->next;
 					lineDrawn++;
-					if (lineIter != NULL)
-						charIter = lineIter->beginning;
+					charsDrawn = 0;
 					break;
 				}
-				mvaddch(i, j, charIter->value);
-				charIter = charIter->next;
+				mvaddch(i, j, lineIter->lineContent[charsDrawn]);
+				charsDrawn++;
 			}
 		}
 	}

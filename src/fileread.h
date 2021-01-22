@@ -18,72 +18,67 @@
  * Email me: natechoe9@gmail.com
  * */
 
+#define INITIAL_LINE_LENGTH 5
+
 #include "os.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-struct linechar {
-	char value;
-	struct linechar *prev;
-	struct linechar *next;
-};
-
 struct line {
-	struct linechar *beginning;
 	struct line *prev;
 	struct line *next;
+	int lineLength;
+	int allocatedLength;
+	char lineContent[];
 };
 
-int getLineLength(struct line *l) {
-	if (l == NULL) return 0;
-	struct linechar *i = l->beginning;
-	int count = 0;
-	while (i != NULL) {
-		count++;
-		i = i->next;
+struct line *initializeLine() {
+	struct line *returnValue = malloc(sizeof(struct line) + (sizeof(char) * INITIAL_LINE_LENGTH));
+	returnValue->lineLength = 1;
+	returnValue->allocatedLength = INITIAL_LINE_LENGTH;
+	return returnValue;
+}
+
+struct line *addToLine(struct line *addLine, char addChar) {
+	struct line *returnLine = addLine;
+	if (addLine->lineLength >= addLine->allocatedLength) {
+		returnLine = malloc(sizeof(struct line) + (addLine->allocatedLength * 2));
+		if (addLine->prev != NULL)
+			addLine->prev->next = returnLine;
+		if (addLine->next != NULL)
+			addLine->next->prev = returnLine;
+		returnLine->prev = addLine->prev;
+		returnLine->lineLength = addLine->lineLength;
+		returnLine->allocatedLength = addLine->allocatedLength * 2;
+		for (int i = 0; i < addLine->lineLength; i++)
+			returnLine->lineContent[i] = addLine->lineContent[i];
 	}
-	return count;
+	returnLine->lineContent[returnLine->lineLength-1] = addChar;
+	returnLine->lineLength++;
 }
 
 struct line getHead(char path[]) {
 	FILE *file;
 	file = fopen(path, "r");
 
-	struct line head;
-	struct line *lineiter = &head;
-	lineiter->beginning = malloc(sizeof(struct linechar));
-	struct linechar *chariter= lineiter->beginning;
+	struct line *lineiter = initializeLine();
 
 	int c = fgetc(file);
 	while (c != EOF) {
 		if (c == '\n') {
-			if (chariter->prev != NULL) {
-				chariter->prev->next = NULL;
-				free(chariter);
-			}
-			else {
-				lineiter->beginning=NULL;
-			}
-			// There is a null char at the end of every line, so I have to remove that.
-			lineiter->next = malloc(sizeof(struct line));
+			lineiter->next = initializeLine();
 			lineiter->next->prev = lineiter;
 			lineiter = lineiter->next;
-			lineiter->beginning = malloc(sizeof(struct linechar));
-			chariter = lineiter->beginning;
 		}
 		else {
-			chariter->value = c;
-			chariter->next = malloc(sizeof(struct linechar));
-			chariter->next->prev = chariter;
-			chariter = chariter->next;
+			lineiter = addToLine(lineiter, c);
 		}
 		
 		c = fgetc(file);
 	}
 
-	lineiter = lineiter->prev;
-	free(lineiter->next);//I don't know why, but there's always a newline at the end of every file.
-	lineiter->next = NULL;
+	while (lineiter->prev != NULL)
+		lineiter = lineiter->prev;
 
-	return head;
+	return *lineiter;
 }
