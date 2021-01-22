@@ -40,7 +40,8 @@ int main(int argc, char *argv[]) {
 
 	char path[sizeof(argv[1]) / sizeof(char)];
 	strcpy(path, argv[1]);
-	struct line head = getHead(path);
+	struct line *head = getHead(path);
+	struct line *currentLine = head;
 
 	/*while (iterator->next != NULL) {
 		for (int i = 0; i < iterator->lineLength; i++)
@@ -57,11 +58,10 @@ int main(int argc, char *argv[]) {
 	char quit = 0;
 	char *bottomMessage;
 	bottomMessage = "\0";
-	struct line *currentLine = &head;
 
 	while (!quit) {
 		int lineLength = currentLine->lineLength;
-		drawText(head, min(cursorX, max(lineLength-1, 0)), cursorY, 0, bottomMessage);
+		drawText(head, min(cursorX, lineLength - 1), cursorY, 0, bottomMessage);
 		switch (getch()) {
 			case LEFT:
 				cursorX = min(cursorX, lineLength - 1);

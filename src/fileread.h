@@ -53,11 +53,11 @@ struct line *addToLine(struct line *addLine, char addChar) {
 		for (int i = 0; i < addLine->lineLength; i++)
 			returnLine->lineContent[i] = addLine->lineContent[i];
 	}
-	returnLine->lineContent[returnLine->lineLength-1] = addChar;
+	returnLine->lineContent[returnLine->lineLength - 1] = addChar;
 	returnLine->lineLength++;
 }
 
-struct line getHead(char path[]) {
+struct line *getHead(char path[]) {
 	FILE *file;
 	file = fopen(path, "r");
 
@@ -80,5 +80,5 @@ struct line getHead(char path[]) {
 	while (lineiter->prev != NULL)
 		lineiter = lineiter->prev;
 
-	return *lineiter;
+	return lineiter;
 }
