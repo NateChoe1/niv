@@ -19,4 +19,4 @@
  * */
 
 #define NORMAL_MODE 0
-#define INSERT_MODE 0
+#define INSERT_MODE 1

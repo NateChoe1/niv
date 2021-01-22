@@ -41,6 +41,7 @@ struct line *addToLine(struct line *addLine, char addChar) {
 		if (addLine->next != NULL)
 			addLine->next->prev = returnLine;
 		returnLine->prev = addLine->prev;
+		returnLine->next = addLine->next;
 		returnLine->lineLength = addLine->lineLength;
 		returnLine->allocatedLength = addLine->allocatedLength * 2;
 		for (int i = 0; i < addLine->lineLength; i++)

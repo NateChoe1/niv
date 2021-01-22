@@ -69,8 +69,8 @@ struct editorState handleKeypress(int keyPressed, int cursorX, int cursorY, stru
 		case BACKWARD_END:
 			break;
 		//TODO: Implement these
-		case ENTER_NORMAL:
-			newState.mode = NORMAL_MODE;
+		case ENTER_INSERT:
+			newState.mode = INSERT_MODE;
 			break;
 		default:
 			newState.condition=INVALID_COMMAND_INPUTTED;

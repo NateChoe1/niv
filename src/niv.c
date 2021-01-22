@@ -52,13 +52,12 @@ int main(int argc, char *argv[]) {
 
 	int mode = NORMAL_MODE;
 	while (!quit) {
-		int lineLength = currentLine->lineLength;
-		drawText(head, min(cursorX, lineLength - 1), cursorY, 0, bottomMessage);
+		drawText(head, min(cursorX, currentLine->lineLength - 1), cursorY, 0, bottomMessage);
 		int keyPressed = getch();
 		switch (mode) {
 			case NORMAL_MODE:;
 				struct editorState newState;
-				newState = handleKeypress(keyPressed, cursorX, cursorY, currentLine, lineLength, path, head);
+				newState = handleKeypress(keyPressed, cursorX, cursorY, currentLine, currentLine->lineLength, path, head);
 				cursorX = newState.cursorX;
 				cursorY = newState.cursorY;
 				mode = newState.mode;
@@ -73,6 +72,19 @@ int main(int argc, char *argv[]) {
 				}
 				currentLine = newState.currentLine;
 				break;
+			case INSERT_MODE:
+				switch(keyPressed) {
+					case ENTER_NORMAL:
+						mode = NORMAL_MODE;
+						break;
+					default:
+						currentLine = addToLine(currentLine, '\0');
+						for (int i = currentLine->lineLength - 1; i > cursorX; i--)
+							currentLine->lineContent[i] = currentLine->lineContent[i-1];
+						currentLine->lineContent[cursorX] = keyPressed;
+						cursorX++;
+						break;
+				}
 		}
 	}
 	endwin();
