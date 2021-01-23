@@ -49,6 +49,7 @@ struct line *addToLine(struct line *addLine, char addChar) {
 	}
 	returnLine->lineContent[returnLine->lineLength - 1] = addChar;
 	returnLine->lineLength++;
+	return returnLine;
 }
 
 struct line *getHead(char path[]) {

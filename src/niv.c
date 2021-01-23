@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
 						mode = NORMAL_MODE;
 						break;
 					case BACKSPACE:
+						if (cursorX == 0) break;
 						for (int i = cursorX - 1; i < currentLine->lineLength - 1; i++)
 							currentLine->lineContent[i] = currentLine->lineContent[i+1];
 						cursorX--;
@@ -98,8 +99,8 @@ int main(int argc, char *argv[]) {
 						cursorY++;
 						break;
 					default:
-						mvaddch(20, 20, 'a');
 						currentLine = addToLine(currentLine, '\0');
+						if (cursorY == 0) head = currentLine;
 						for (int i = currentLine->lineLength - 1; i > cursorX; i--)
 							currentLine->lineContent[i] = currentLine->lineContent[i-1];
 						currentLine->lineContent[cursorX] = keyPressed;

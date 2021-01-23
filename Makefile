@@ -17,4 +17,4 @@
 # Email me: natechoe9@gmail.com
 
 niv: src/niv.c
-	$(CC) src/niv.c -o build/niv -lncurses
+	$(CC) src/niv.c -o build/niv -lncurses -O3
