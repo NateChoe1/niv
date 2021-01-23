@@ -90,12 +90,13 @@ int main(int argc, char *argv[]) {
 						currentLine->next->prev = newLine;
 						currentLine->next = newLine;
 						for (int i = cursorX; i < currentLine->lineLength; i++)
-							newLine = addToLine(newLine, currentLine->lineContent[i - cursorX]);
+							newLine = addToLine(newLine, currentLine->lineContent[i]);
 						newLine->lineLength = currentLine->lineLength - cursorX;
 						currentLine->lineLength = cursorX + 1;
 						currentLine = newLine;
 						cursorX = 0;
 						cursorY++;
+						break;
 					default:
 						mvaddch(20, 20, 'a');
 						currentLine = addToLine(currentLine, '\0');
