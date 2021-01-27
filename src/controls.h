@@ -34,6 +34,10 @@
 #define BACKWARD_END 'G'
 
 #define ENTER_INSERT 'a'
-#define ENTER_NORMAL 27
+#define APPEND 'A'
 
+#define ENTER_NORMAL 27
 #define BACKSPACE 127
+
+#define ENTER_COMMAND '\''
+#define ENTER_KEY 10

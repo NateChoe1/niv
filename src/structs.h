@@ -9,11 +9,3 @@ struct line {
 	int allocatedLength;
 	char lineContent[];
 };
-
-struct editorState {
-	int cursorX;
-	int cursorY;
-	int mode;
-	int condition;
-	struct line *currentLine;
-};

@@ -3,8 +3,7 @@
  * Copyright (C) 2021  Nathaniel Choe
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the license, or
+ * it under the terms of the GNU General Public License as published by * the Free Software Foundation, either version 3 of the license, or
  * {at your option} any later version.
  *
  * This program is distribyted in the hope that it will be useful,
@@ -56,12 +55,9 @@ int main(int argc, char *argv[]) {
 		int keyPressed = getch();
 		switch (mode) {
 			case NORMAL_MODE:;
-				struct editorState newState;
-				newState = handleKeypress(keyPressed, cursorX, cursorY, currentLine, currentLine->lineLength, path, head);
-				cursorX = newState.cursorX;
-				cursorY = newState.cursorY;
-				mode = newState.mode;
-				switch (newState.condition) {
+				int condition;
+				currentLine = handleKeypress(keyPressed, &cursorX, &cursorY, currentLine, currentLine->lineLength, path, head, &mode, &condition);
+				switch (condition) {
 					case EXIT:
 						quit = 1;
 						break;
@@ -70,12 +66,12 @@ int main(int argc, char *argv[]) {
 						bottomMessage = "Invalid command inputted.";
 						break;
 				}
-				currentLine = newState.currentLine;
 				break;
 			case INSERT_MODE:
 				switch(keyPressed) {
 					case ENTER_NORMAL:
 						mode = NORMAL_MODE;
+						cursorX = max(cursorX - 1, 0);
 						break;
 					case BACKSPACE:
 						if (cursorX == 0) break;
@@ -88,7 +84,8 @@ int main(int argc, char *argv[]) {
 						struct line *newLine = initializeLine();
 						newLine->next = currentLine->next;
 						newLine->prev = currentLine;
-						currentLine->next->prev = newLine;
+						if (currentLine->next != NULL)
+							currentLine->next->prev = newLine;
 						currentLine->next = newLine;
 						for (int i = cursorX; i < currentLine->lineLength; i++)
 							newLine = addToLine(newLine, currentLine->lineContent[i]);
@@ -107,6 +104,11 @@ int main(int argc, char *argv[]) {
 						cursorX++;
 						break;
 				}
+				break;
+			case COMMAND_MODE:
+				switch(keyPressed) {
+				}
+				break;
 		}
 	}
 	endwin();

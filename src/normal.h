@@ -5,56 +5,52 @@
 int min(int a, int b);
 int max(int a, int b);
 
-struct editorState handleKeypress(int keyPressed, int cursorX, int cursorY, struct line *currentLine, int lineLength, char path[], struct line *head) {
-	struct editorState newState;
-	newState.condition = OKAY;
-	newState.mode = NORMAL_MODE;
-	newState.currentLine = currentLine;
-	newState.cursorX = cursorX;
-	newState.cursorY = cursorY;
+struct line *handleKeypress(int keyPressed, int *cursorX, int *cursorY, struct line *currentLine, int lineLength, char path[], struct line *head, int *mode, int *condition) {
+	*condition = OKAY;
+	*mode = NORMAL_MODE;
 	switch (keyPressed) {
 		case LEFT:
-			newState.cursorX = min(cursorX, lineLength - 1);
-			if (cursorX > 0)
-				newState.cursorX--;
+			*cursorX = min(*cursorX, lineLength - 1);
+			if (*cursorX > 0)
+				*cursorX = *cursorX - 1;
 			break;
 		case LINE_BEGIN:
-			newState.cursorX = 0;
+			*cursorX = 0;
 			break;
 		case RIGHT:
-			if (cursorX < lineLength - 1)
-			newState.cursorX = cursorX + 1;
+			if (*cursorX < lineLength - 1)
+				*cursorX = *cursorX + 1;
 			break;
 		case LINE_END:
-			newState.cursorX = lineLength - 1;
+			*cursorX = lineLength - 1;
 			break;
 		case UP:
 			if (currentLine->prev != NULL) {
-				newState.cursorY = cursorY - 1;
-				newState.currentLine = currentLine->prev;
+				*cursorY = *cursorY - 1;
+				currentLine = currentLine->prev;
 			}
 			break;
 		case BEGIN:
-			while (newState.currentLine->prev != NULL)
-				newState.currentLine = newState.currentLine->prev;
-			newState.cursorX = 0;
-			newState.cursorY = 0;
+			while (currentLine->prev != NULL)
+				currentLine = currentLine->prev;
+			*cursorX = 0;
+			*cursorY = 0;
 			break;
 		case DOWN:
 			if (currentLine->next != NULL) {
-				newState.cursorY = cursorY + 1;
-				newState.currentLine = newState.currentLine->next;
+				*cursorY = *cursorY + 1;
+				currentLine = currentLine->next;
 			}
 			break;
 		case END:
-			while (newState.currentLine->next != NULL) {
-				newState.currentLine = newState.currentLine->next;
-				newState.cursorY = newState.cursorY + 1;
+			while (currentLine->next != NULL) {
+				currentLine = currentLine->next;
+				*cursorY = *cursorY + 1;
 			}
-			newState.cursorX = newState.currentLine->lineLength - 1;
+			*cursorX = currentLine->lineLength - 1;
 			break;
 		case QUIT:
-			newState.condition = EXIT;
+			*condition = EXIT;
 			break;
 		case SAVE:
 			writeFile(path, head);
@@ -69,12 +65,19 @@ struct editorState handleKeypress(int keyPressed, int cursorX, int cursorY, stru
 			break;
 		//TODO: Implement these
 		case ENTER_INSERT:
-			newState.mode = INSERT_MODE;
+			*mode = INSERT_MODE;
+			break;
+		case APPEND:
+			*mode = INSERT_MODE;
+			*cursorX = *cursorX + 1;
+			break;
+		case ENTER_COMMAND:
+			*mode = COMMAND_MODE;
 			break;
 		default:
-			newState.condition=INVALID_COMMAND_INPUTTED;
+			*condition=INVALID_COMMAND_INPUTTED;
 	}
-	return newState;
+	return currentLine;
 }
 
 int min(int a, int b) {

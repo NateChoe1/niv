@@ -20,3 +20,4 @@
 
 #define NORMAL_MODE 0
 #define INSERT_MODE 1
+#define COMMAND_MODE 2
